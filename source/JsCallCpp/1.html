@@ -1,0 +1,31 @@
+﻿<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script language="javascript">
+        function ShowMessageBox()
+        {
+            if (cpp_object != null)
+                cpp_object.ShowMessageBox("你好，我是Javascript，你是谁？");
+        }
+        function GetProcessID()
+        {
+            if (cpp_object != null)
+            {
+                var id = cpp_object.GetProcessID();
+                document.getElementById("process_info").innerText = "本进程ID为：" + id;
+            }
+        }
+        function SaveCppObject(obj)
+        {
+            cpp_object = obj;
+        }
+        var cpp_object;
+    </script>
+</head>
+<body>
+    <p id="process_info"></p>
+    <button type="button" onclick="ShowMessageBox()">MessageBox</button>
+    <button type="button" onclick="GetProcessID()">Process ID</button>
+</body>
+</html>
