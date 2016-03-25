@@ -1,6 +1,6 @@
 javascript_call_cpp
 
-this is a simple example show how to use javascript call cpp on Microsoft‘s WebBrowser
+this is a simple example show how to use javascript call cpp on Microsoft‘s webbrowser
 
 detail：
 
