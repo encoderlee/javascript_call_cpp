@@ -32,7 +32,6 @@ void CJsCallCppDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CJsCallCppDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDOK, &CJsCallCppDlg::OnBnClickedOk)
 END_MESSAGE_MAP()
 
 
@@ -207,17 +206,6 @@ ULONG STDMETHODCALLTYPE CJsCallCppDlg::Release()
 	return 1;
 }
 
-//调用JavaScript的SaveCppObject函数，把我自己(this)交给它，SaveCppObject会把我这个对象保存到全局变量var cpp_object;中
-//以后JavaScript就可以通过cpp_object来调用我这个C++对象的方法了
-void CJsCallCppDlg::OnBnClickedOk()
-{
-	CComQIPtr<IHTMLDocument2> document = m_webbrowser.get_Document();
-	CComDispatchDriver script;
-	document->get_Script(&script);
-	CComVariant var(static_cast<IDispatch*>(this));
-	script.Invoke1(L"SaveCppObject", &var);
-}
-
 DWORD CJsCallCppDlg::GetProcessID()
 {
 	return GetCurrentProcessId();
@@ -228,3 +216,21 @@ void CJsCallCppDlg::ShowMessageBox(const wchar_t *msg)
 	MessageBox(msg, L"这是来自javascript的消息");
 }
 
+BEGIN_EVENTSINK_MAP(CJsCallCppDlg, CDialogEx)
+	ON_EVENT(CJsCallCppDlg, IDC_EXPLORER1, 259, CJsCallCppDlg::DocumentCompleteExplorer1, VTS_DISPATCH VTS_PVARIANT)
+END_EVENTSINK_MAP()
+
+
+//该事件响应函数会在WebBrowser加载HTML文档完毕后被调用
+//此时调用JavaScript的SaveCppObject函数，把我自己(this)交给它，SaveCppObject会把我这个对象保存到全局变量var cpp_object;中
+//以后JavaScript就可以通过cpp_object来调用我这个C++对象的方法了
+//注意，因为我的程序只用m_webbrowser.Navigate加载了一个HTML，所以这里我没有检查VARIANT* URL
+//如果你的程序中有多次m_webbrowser.Navigate，需要通过VARIANT* URL判断这次事件响应是对应着哪次Navigate
+void CJsCallCppDlg::DocumentCompleteExplorer1(LPDISPATCH pDisp, VARIANT* URL)
+{
+	CComQIPtr<IHTMLDocument2> document = m_webbrowser.get_Document();
+	CComDispatchDriver script;
+	document->get_Script(&script);
+	CComVariant var(static_cast<IDispatch*>(this));
+	script.Invoke1(L"SaveCppObject", &var);
+}

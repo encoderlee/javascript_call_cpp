@@ -50,5 +50,6 @@ protected:
 private:
 	CExplorer1 m_webbrowser;
 public:
-	afx_msg void OnBnClickedOk();
+	DECLARE_EVENTSINK_MAP()
+	void DocumentCompleteExplorer1(LPDISPATCH pDisp, VARIANT* URL);
 };
